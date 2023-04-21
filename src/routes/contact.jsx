@@ -1,21 +1,21 @@
-import { Form, useFetcher, useLoaderData } from "react-router-dom";
-import { getContact, updateContact } from "../contacts";
+import { Form, useFetcher, useLoaderData } from 'react-router-dom';
+import { getContact, updateContact } from '../contacts';
 
-export async function loader({ params }) {
+export async function contactLoader({ params }) {
   const contact = getContact(params.contactId);
   if (!contact) {
-    throw new Response("", {
+    throw new Response('', {
       status: 404,
-      statusText: "Not Found",
+      statusText: 'Not Found',
     });
   }
   return contact;
 }
 
-export async function action({ request, params }) {
+export async function contactAction({ request, params }) {
   let formData = await request.formData();
   return updateContact(params.contactId, {
-    favorite: formData.get("favorite") === "true",
+    favorite: formData.get('favorite') === 'true',
   });
 }
 
@@ -58,7 +58,7 @@ export default function Contact() {
             action="destroy"
             method="post"
             onSubmit={(event) => {
-              if (!confirm("Please confirm you want to delete this record.")) {
+              if (!confirm('Please confirm you want to delete this record.')) {
                 event.preventDefault();
               }
             }}
@@ -76,17 +76,17 @@ function Favorite({ contact }) {
   let favorite = contact.favorite;
   const fetcher = useFetcher();
   if (fetcher.formData) {
-    favorite = fetcher.formData.get("favorite") === "true";
+    favorite = fetcher.formData.get('favorite') === 'true';
   }
 
   return (
     <fetcher.Form method="post">
       <button
         name="favorite"
-        value={favorite ? "false" : "true"}
-        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+        value={favorite ? 'false' : 'true'}
+        aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        {favorite ? "★" : "☆"}
+        {favorite ? '★' : '☆'}
       </button>
     </fetcher.Form>
   );
