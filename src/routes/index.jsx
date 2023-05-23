@@ -1,10 +1,17 @@
-export default function Index() {
-  return (
-    <p id="zero-state">
-      This is a demo for React Router.
-      <br />
-      Check out{" "}
-      <a href="https://reactrouter.com">the docs at reactrouter.com</a>.
-    </p>
-  );
-}
+import { createBrowserRouter } from "react-router-dom";
+import ErrorPage from "../error-page";
+import Root, { rootAction, rootLoader } from "../pages/root";
+import { contactsRoutes } from "../pages/contacts/routes";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
+    loader: rootLoader,
+    action: rootAction,
+    children: [contactsRoutes],
+  },
+]);
+
+export default router;

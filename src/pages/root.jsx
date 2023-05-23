@@ -1,18 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
-  Outlet,
-  useLoaderData,
   Form,
-  redirect,
   NavLink,
+  Outlet,
+  redirect,
+  useLoaderData,
   useNavigation,
   useSubmit,
-} from 'react-router-dom';
-import { getContacts, createContact } from '../contacts';
+} from "react-router-dom";
+import { getContacts } from "../contacts";
 
 export async function rootLoader({ request }) {
   const url = new URL(request.url);
-  const q = url.searchParams.get('q');
+  const q = url.searchParams.get("q");
   const contacts = await getContacts(q);
   return { contacts, q };
 }
@@ -30,10 +30,10 @@ export default function Root() {
 
   const searching =
     navigation.location &&
-    new URLSearchParams(navigation.location.search).has('q');
+    new URLSearchParams(navigation.location.search).has("q");
 
   useEffect(() => {
-    document.getElementById('q').value = q;
+    document.getElementById("q").value = q;
   }, [q]);
 
   return (
@@ -44,7 +44,7 @@ export default function Root() {
           <Form id="search-form" role="search">
             <input
               id="q"
-              className={searching ? 'loading' : ''}
+              className={searching ? "loading" : ""}
               aria-label="Search contacts"
               placeholder="Search"
               type="search"
@@ -73,7 +73,7 @@ export default function Root() {
                   <NavLink
                     to={`contacts/${contact.id}`}
                     className={({ isActive, isPending }) =>
-                      isActive ? 'active' : isPending ? 'pending' : ''
+                      isActive ? "active" : isPending ? "pending" : ""
                     }
                   >
                     {contact.first || contact.last ? (
@@ -97,7 +97,7 @@ export default function Root() {
       </div>
       <div
         id="detail"
-        className={navigation.state === 'loading' ? 'loading' : ''}
+        className={navigation.state === "loading" ? "loading" : ""}
       >
         <Outlet />
       </div>

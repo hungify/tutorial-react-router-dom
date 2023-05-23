@@ -1,42 +1,31 @@
-import {
-  Form,
-  useLoaderData,
-  redirect,
-  useNavigate,
-  useSubmit,
-  useFetcher,
-} from 'react-router-dom';
-import { createContact, updateContact } from '../contacts';
-import { useForm } from 'react-hook-form';
+import { useForm, Form } from "react-hook-form";
+import { Form, redirect, useActionData, useNavigate } from "react-router-dom";
+import { createContact } from "../../contacts";
 
 export async function newContactAction({ request, params }) {
-  console.log('🚀 :: file: new.jsx:13 :: request:', request);
   const formData = await request.formData();
-  const contact = Object.fromEntries(formData);
-  console.log('contact', contact);
-  // const updates = Object.fromEntries(formData);
-  // await updateContact(contact.id, updates);
-  // return redirect(`/contacts/${contact.id}`);
-  return null;
+  const data = Object.fromEntries(formData);
+  const newContact = await createContact(data);
+  return redirect(`/contacts/${newContact.id}`);
 }
 
 export default function NewContact() {
-  const contact = useLoaderData();
   const navigate = useNavigate();
+  const actionData = useActionData();
 
   const {
+    trigger,
     register,
-    handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: actionData?.defaultValues,
+    defaultErrors: actionData?.errors,
+  });
 
-  const submit = useSubmit();
-
-  const onSubmit = async (data, evt) => {
-    submit(evt.currentTarget, {
-      method: 'POST',
-      action: 'contacts/new',
-    });
+  const onSubmit = async (e) => {
+    const isValid = await trigger();
+    console.log("🚀 :: file: new.jsx:27 :: isValid:", isValid);
+    if (!isValid) e.preventDefault();
   };
 
   return (
@@ -44,7 +33,7 @@ export default function NewContact() {
       action="/contacts/new"
       method="post"
       id="contact-form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={(e) => onSubmit(e)}
     >
       <div>
         <span>Name</span>
@@ -55,8 +44,8 @@ export default function NewContact() {
               aria-label="First name"
               type="text"
               name="first"
-              {...register('first', {
-                required: 'This field is required',
+              {...register("first", {
+                required: "This field is required",
               })}
             />
             {errors.first && (
@@ -71,8 +60,8 @@ export default function NewContact() {
               aria-label="Last name"
               type="text"
               name="last"
-              {...register('last', {
-                required: 'This field is required',
+              {...register("last", {
+                required: "This field is required",
               })}
             />
             {errors.last && (
@@ -92,8 +81,8 @@ export default function NewContact() {
             type="text"
             name="twitter"
             placeholder="@jack"
-            {...register('twitter', {
-              required: 'This field is required',
+            {...register("twitter", {
+              required: "This field is required",
             })}
           />
           {errors.twitter && (
@@ -114,8 +103,8 @@ export default function NewContact() {
             aria-label="Avatar URL"
             type="text"
             name="avatar"
-            {...register('avatar', {
-              required: 'This field is required',
+            {...register("avatar", {
+              required: "This field is required",
             })}
           />
           {errors.avatar && (
@@ -132,8 +121,8 @@ export default function NewContact() {
         <div>
           <textarea
             name="notes"
-            {...register('notes', {
-              required: 'This field is required',
+            {...register("notes", {
+              required: "This field is required",
             })}
           />
           {errors.notes && (
