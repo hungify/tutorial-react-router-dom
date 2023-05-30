@@ -1,5 +1,11 @@
-import { useForm, Form } from "react-hook-form";
-import { Form, redirect, useActionData, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  redirect,
+  useActionData,
+  useNavigate,
+  useSubmit,
+} from "react-router-dom";
 import { createContact } from "../../contacts";
 
 export async function newContactAction({ request, params }) {
@@ -12,10 +18,12 @@ export async function newContactAction({ request, params }) {
 export default function NewContact() {
   const navigate = useNavigate();
   const actionData = useActionData();
+  const submit = useSubmit();
 
   const {
     trigger,
     register,
+    getValues,
     formState: { errors },
   } = useForm({
     defaultValues: actionData?.defaultValues,
@@ -24,14 +32,20 @@ export default function NewContact() {
 
   const onSubmit = async (e) => {
     const isValid = await trigger();
-    console.log("🚀 :: file: new.jsx:27 :: isValid:", isValid);
-    if (!isValid) e.preventDefault();
+    e.preventDefault();
+    if (isValid) {
+      const values = getValues();
+      submit(values, {
+        action: "/contacts/new",
+        method: "post",
+      });
+    }
   };
 
   return (
-    <Form
-      action="/contacts/new"
-      method="post"
+    <form
+      // action="/contacts/new"
+      // method="post"
       id="contact-form"
       onSubmit={(e) => onSubmit(e)}
     >
@@ -143,6 +157,6 @@ export default function NewContact() {
           Cancel
         </button>
       </div>
-    </Form>
+    </form>
   );
 }

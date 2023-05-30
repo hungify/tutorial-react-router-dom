@@ -18,8 +18,6 @@ export async function rootLoader({ request }) {
 }
 
 export async function rootAction() {
-  // const contact = await createContact();
-  // return redirect(`/contacts/${contact.id}/edit`);
   return redirect(`/contacts/new`);
 }
 

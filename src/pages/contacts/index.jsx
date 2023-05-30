@@ -13,10 +13,12 @@ export async function contactLoader({ params }) {
 }
 
 export async function contactAction({ request, params }) {
-  let formData = await request.formData();
-  return updateContact(params.contactId, {
-    favorite: formData.get("favorite") === "true",
-  });
+  if (request.method === "POST") {
+    const formData = await request.formData();
+    return updateContact(params.contactId, {
+      favorite: formData.get("favorite") === "true",
+    });
+  }
 }
 
 export default function Contact() {
@@ -24,55 +26,67 @@ export default function Contact() {
 
   return (
     <div id="contact">
-      <div>
-        <img key={contact.avatar} src={contact.avatar || null} />
-      </div>
+      {contact ? (
+        <>
+          <div>
+            <img key={contact.avatar} src={contact.avatar || null} />
+          </div>
 
-      <div>
-        <h1>
-          {contact.first || contact.last ? (
-            <>
-              {contact.first} {contact.last}
-            </>
-          ) : (
-            <i>No Name</i>
-          )}
-          <Favorite contact={contact} />
-        </h1>
+          <div>
+            <h1>
+              {contact.first || contact.last ? (
+                <>
+                  {contact.first} {contact.last}
+                </>
+              ) : (
+                <i>No Name</i>
+              )}
+              <Favorite contact={contact} />
+            </h1>
 
-        {contact.twitter && (
-          <p>
-            <a target="_blank" href={`https://twitter.com/${contact.twitter}`}>
-              {contact.twitter}
-            </a>
-          </p>
-        )}
+            {contact.twitter && (
+              <p>
+                <a
+                  target="_blank"
+                  href={`https://twitter.com/${contact.twitter}`}
+                >
+                  {contact.twitter}
+                </a>
+              </p>
+            )}
 
-        {contact.notes && <p>{contact.notes}</p>}
+            {contact.notes && <p>{contact.notes}</p>}
 
+            <div>
+              <Form method="GET" action="edit">
+                <button type="submit">Edit</button>
+              </Form>
+              <Form
+                action="destroy"
+                method="post"
+                onSubmit={(event) => {
+                  if (
+                    !confirm("Please confirm you want to delete this record.")
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+              >
+                <button type="submit">Delete</button>
+              </Form>
+            </div>
+          </div>
+        </>
+      ) : (
         <div>
-          <Form method="post" action="edit">
-            <button type="submit">Edit</button>
-          </Form>
-          <Form
-            action="destroy"
-            method="post"
-            onSubmit={(event) => {
-              if (!confirm("Please confirm you want to delete this record.")) {
-                event.preventDefault();
-              }
-            }}
-          >
-            <button type="submit">Delete</button>
-          </Form>
+          Please choose a contact from the list on the left, or create a new
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 function Favorite({ contact }) {
-  // yes, this is a `let` for later
   let favorite = contact.favorite;
   const fetcher = useFetcher();
   if (fetcher.formData) {
